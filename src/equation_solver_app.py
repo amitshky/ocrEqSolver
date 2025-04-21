@@ -10,6 +10,10 @@ from processing import process_image, show_processed_images
 from model import Model
 
 
+DISPLAY_IMG_MAX_WIDTH = 800
+DISPLAY_IMG_MAX_HEIGHT = 600
+
+
 class EquationSolverApp:
     def __init__(self, root):
         self.root = root
@@ -165,8 +169,8 @@ class EquationSolverApp:
             image = Image.open(file_path)
 
             # Calculate new dimensions while maintaining aspect ratio
-            max_width = 400
-            max_height = 300
+            max_width = DISPLAY_IMG_MAX_WIDTH
+            max_height = DISPLAY_IMG_MAX_HEIGHT
             width, height = image.size
 
             if width > max_width or height > max_height:
@@ -193,8 +197,8 @@ class EquationSolverApp:
             pil_img = Image.fromarray(self.processed_image)
 
             # Calculate new dimensions while maintaining aspect ratio
-            max_width = 400
-            max_height = 300
+            max_width = DISPLAY_IMG_MAX_WIDTH
+            max_height = DISPLAY_IMG_MAX_HEIGHT
             width, height = pil_img.size
 
             if width > max_width or height > max_height:

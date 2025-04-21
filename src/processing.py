@@ -23,7 +23,7 @@ def show_processed_images(segmented_chars, processed_images):
     # processed images
     num = len(processed_images)
     rows = int(np.ceil(num / 2))
-    plt.figure(figsize=(12, 5 * rows))
+    plt.figure(figsize=(12, 4 * rows))
     for i, img in enumerate(processed_images):
         plt.subplot(rows, 2, i + 1)
         plt.imshow(img['image'], cmap='gray')
