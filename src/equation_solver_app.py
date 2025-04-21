@@ -6,7 +6,7 @@ from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
 
 from solver import solve_equation, process_equation
-from processing import process_image, show_segmented_characters
+from processing import process_image, show_processed_images
 from model import Model
 
 
@@ -138,7 +138,8 @@ class EquationSolverApp:
 
             # Load image and convert to grayscale
             image = cv.imread(self.image_path)
-            (binary, self.segmented_chars) = process_image(image)
+            [binary, self.segmented_chars,
+                processed_images] = process_image(image, self.debug_mode.get())
 
             # Display the processed image
             self.processed_image = binary
@@ -146,7 +147,7 @@ class EquationSolverApp:
 
             # Show segmented characters in debug mode
             if self.debug_mode.get():
-                show_segmented_characters(self.segmented_chars)
+                show_processed_images(self.segmented_chars, processed_images)
 
             # Enable solve button
             self.solve_button.config(state=tk.NORMAL)
@@ -221,11 +222,15 @@ class EquationSolverApp:
             return
 
         try:
+            self.status_var.set("Solving equation...")
+            self.root.update()
+
             parsed_equation = []
             for chars in self.segmented_chars:
                 x = chars["image"].reshape(28, 28, 1)
                 # convert to (1, 28, 28, 3)
-                input_img = np.concatenate((x, x, x), axis=2).reshape(1, 28, 28, 3)
+                input_img = np.concatenate(
+                    (x, x, x), axis=2).reshape(1, 28, 28, 3)
                 parsed_equation.append(self.model.predict(input_img))
 
             if len(parsed_equation) == 0:
@@ -238,6 +243,8 @@ class EquationSolverApp:
                 tk.END, f"Detected Equation: {equation_str}\n")
             self.results_text.insert(tk.END, f"Solution: {
                 solve_equation(equation_str)}\n")
+
+            self.status_var.set("DONE.")
 
         except Exception as e:
             self.status_var.set(f"Error solving equation: {str(e)}")

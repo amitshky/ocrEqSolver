@@ -10,7 +10,7 @@ def main():
     SEED = int(time.time())
     VALIDATION_SPLIT = 0.1
     EPOCHS = 20
-    DS_DIR = "dataset/"
+    DS_DIR = "dataset/used/"
 
     # load dataset
     train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -36,7 +36,7 @@ def main():
     train_ds = train_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
     val_ds = val_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 
-    model = Model()
+    model = Model(load=False)
     model.summary()
     model.train(train_ds, val_ds, EPOCHS)
     model.save(f"saves/model-{int(time.time())}.weights.h5")

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class Model:
-    def __init__(self):
+    def __init__(self, load: bool = True):
         self.class_names = ['0', '1', '2', '3', '4',
                             '5', '6', '7', '8', '9',
                             '.', '-', '+', '/', 'x']
@@ -38,7 +38,9 @@ class Model:
                 from_logits=True),
             metrics=['accuracy']
         )
-        self.model.load_weights("saves/saved.weights.h5")
+
+        if load:
+            self.model.load_weights("saves/model.weights.h5")
 
     def summary(self):
         return self.model.summary()

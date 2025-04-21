@@ -33,7 +33,7 @@ def process_equation(parsed_equation: list[str]):
     # '=' is split when segmenting the image so
     # replacing '--' with '='
     equation_str = equation_str.replace("--", "=")
-    equation_str = equation_str.replace('z', '2')
+    # formatting equation for sympy
     equation_str = equation_str.replace('x', "*x")
 
     # Remove any characters that shouldn't be there

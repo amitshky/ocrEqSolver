@@ -2,26 +2,35 @@ import os
 from os import listdir
 import cv2 as cv
 import numpy as np
-import tempfile
 from matplotlib import pyplot as plt
 
 
-def show_segmented_characters(segmented_chars):
-    """Show the segmented characters in a debug window"""
-    if not segmented_chars:
+def show_processed_images(segmented_chars, processed_images):
+    if not processed_images or not segmented_chars:
         return
 
-    num_chars = len(segmented_chars)
-    rows = int(np.ceil(num_chars / 5))
-
+    # segmented images
+    num = len(segmented_chars)
+    rows = int(np.ceil(num / 5))
     plt.figure(figsize=(10, 2 * rows))
-
     for i, char_data in enumerate(segmented_chars):
         plt.subplot(rows, 5, i + 1)
         plt.imshow(char_data['image'], cmap='gray')
-        plt.title(f"Char:")
         plt.axis('off')
 
+    plt.tight_layout()
+
+    # processed images
+    num = len(processed_images)
+    rows = int(np.ceil(num / 2))
+    plt.figure(figsize=(12, 5 * rows))
+    for i, img in enumerate(processed_images):
+        plt.subplot(rows, 2, i + 1)
+        plt.imshow(img['image'], cmap='gray')
+        plt.title(img['title'])
+        plt.axis('off')
+
+    plt.subplots_adjust(hspace=0.5, wspace=0.3)  # Increase space between images
     plt.tight_layout()
     plt.show()
 
@@ -51,7 +60,7 @@ def image_padding(image):
 
 
 # process image to be passed into model when predicting
-def process_image(image):
+def process_image(image, isDebug: bool):
     img_original = image.copy()
     grayscaled = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     _, binarized = cv.threshold(
@@ -63,7 +72,6 @@ def process_image(image):
 
     contours, _ = cv.findContours(
         binarized, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    # contours_img = cv.drawContours(image, contours, -1, (255, 0, 255), 3)
 
     # Sort contours by x-coordinate (left to right)
     sorted_contours = sorted(
@@ -75,11 +83,11 @@ def process_image(image):
 
     segmented_chars = []
     img_rect = img_original.copy()
-    for i, contour in enumerate(char_contours):
+    for contour in char_contours:
         # Get bounding box
         x, y, w, h = cv.boundingRect(contour)
         img_rect = cv.rectangle(
-            img_rect, (x, y), (x + w, y + h), (0, 255, 0), 3)
+            img_rect, (x, y), (x + w, y + h), (0, 255, 0), 8)
 
         # Extract character ROI with some padding
         padding = 2
@@ -100,10 +108,20 @@ def process_image(image):
         segmented_chars.append({
             'image': char_img,
             'position': (x, y, w, h),
-            'value': '?' # this is updated later
         })
 
-    return (binarized, segmented_chars)
+    processed_images = []
+    if isDebug:
+        contours_img = cv.drawContours(image, contours, -1, (255, 0, 255), 3)
+        processed_images = [
+            { "title": "Grayscaled", "image": grayscaled },
+            { "title": "Binarized", "image": binarized },
+            { "title": "Contours", "image": contours_img },
+            { "title": "Segments", "image": img_rect }
+        ]
+
+    processed = img_rect
+    return (processed, segmented_chars, processed_images)
 
 
 
