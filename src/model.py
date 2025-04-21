@@ -7,8 +7,7 @@ class Model:
     def __init__(self):
         self.class_names = ['0', '1', '2', '3', '4',
                             '5', '6', '7', '8', '9',
-                            '.', '-', '+', '/',
-                            'w', 'x', 'y', 'z']
+                            '.', '-', '+', '/', 'x']
         self.num_classes = len(self.class_names)
 
         self.model = tf.keras.Sequential([
