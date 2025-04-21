@@ -1,12 +1,13 @@
+import os
+import cv2 as cv
+import numpy as np
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
-import tempfile
-import os
-import cv2 as cv
-import pytesseract as pt
-from solver import solve_equation
-import numpy as np
+
+from solver import solve_equation, process_equation
+from processing import process_image, show_segmented_characters
+from model import Model
 
 
 class EquationSolverApp:
@@ -23,11 +24,11 @@ class EquationSolverApp:
         self.style.configure("TLabel", font=("Arial", 12))
 
         # Initialize variables
+        self.model = Model()
         self.image_path = None
         self.processed_image = None
         self.segmented_chars = []
         self.debug_mode = tk.BooleanVar(value=False)
-        self.temp_dir = tempfile.mkdtemp()
 
         self.create_widgets()
 
@@ -76,6 +77,15 @@ class EquationSolverApp:
                                          state=tk.DISABLED)
         self.process_button.pack(side=tk.LEFT, padx=5)
 
+        self.solve_button = ttk.Button(control_panel, text="Solve Equation",
+                                       command=self.solve,
+                                       state=tk.DISABLED)
+        self.solve_button.pack(side=tk.LEFT, padx=5)
+
+        clear_button = ttk.Button(
+            control_panel, text="Clear", command=self.clear)
+        clear_button.pack(side=tk.LEFT, padx=5)
+
         # Status bar
         self.status_var = tk.StringVar()
         self.status_var.set("Ready")
@@ -122,32 +132,26 @@ class EquationSolverApp:
         if not self.image_path:
             return
 
-        self.status_var.set("Processing image...")
-        self.root.update()
-
-        # Load image and convert to grayscale
-        image = cv.imread(self.image_path)
-        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-
-        # Apply thresholding
-        _, binary = cv.threshold(gray, 150, 255,
-                                 cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
-
-        # Remove noise
-        kernel = np.ones((2, 2), np.uint8)
-        binary = cv.morphologyEx(binary, cv.MORPH_CLOSE, kernel)
-
-        # Display the processed image
-        self.processed_image = binary
-        self.display_processed_image()
-
         try:
-            equation_str = pt.image_to_string(self.processed_image)
-            self.results_text.delete(1.0, tk.END)
-            self.results_text.insert(
-                tk.END, f"Detected Equation: {equation_str}")
-            self.results_text.insert(tk.END, f"Solution: {
-                                     solve_equation(equation_str)}\n")
+            self.status_var.set("Processing image...")
+            self.root.update()
+
+            # Load image and convert to grayscale
+            image = cv.imread(self.image_path)
+            (binary, self.segmented_chars) = process_image(image)
+
+            # Display the processed image
+            self.processed_image = binary
+            self.display_processed_image()
+
+            # Show segmented characters in debug mode
+            if self.debug_mode.get():
+                show_segmented_characters(self.segmented_chars)
+
+            # Enable solve button
+            self.solve_button.config(state=tk.NORMAL)
+
+            self.status_var.set("Image processed. Ready to solve.")
 
         except Exception as e:
             self.status_var.set(f"Error loading image: {str(e)}")
@@ -209,3 +213,50 @@ class EquationSolverApp:
         except Exception as e:
             self.status_var.set(f"Error loading image: {str(e)}")
             messagebox.showerror("Error", f"Failed to load image: {str(e)}")
+
+    def solve(self):
+        """Recognize the equation and solve it"""
+        if not self.segmented_chars:
+            self.status_var.set("Process the image first")
+            return
+
+        try:
+            parsed_equation = []
+            for chars in self.segmented_chars:
+                x = chars["image"].reshape(28, 28, 1)
+                # convert to (1, 28, 28, 3)
+                input_img = np.concatenate((x, x, x), axis=2).reshape(1, 28, 28, 3)
+                parsed_equation.append(self.model.predict(input_img))
+
+            if len(parsed_equation) == 0:
+                raise Exception("Unable to parse equation!")
+
+            equation_str = process_equation(parsed_equation)
+
+            self.results_text.delete(1.0, tk.END)
+            self.results_text.insert(
+                tk.END, f"Detected Equation: {equation_str}\n")
+            self.results_text.insert(tk.END, f"Solution: {
+                solve_equation(equation_str)}\n")
+
+        except Exception as e:
+            self.status_var.set(f"Error solving equation: {str(e)}")
+            self.results_text.insert(tk.END, f"Error: {str(e)}")
+
+    def clear(self):
+        """Reset the application state"""
+        self.image_path = None
+        self.processed_image = None
+        self.segmented_chars = []
+
+        # Clear UI elements
+        self.original_label.config(image="")
+        self.processed_label.config(image="")
+        self.results_text.delete(1.0, tk.END)
+
+        # Reset buttons
+        self.process_button.config(state=tk.DISABLED)
+        self.solve_button.config(state=tk.DISABLED)
+
+        # Reset status
+        self.status_var.set("Ready")

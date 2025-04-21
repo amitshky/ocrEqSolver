@@ -5,8 +5,9 @@ import numpy as np
 
 class Model:
     def __init__(self):
-        self.class_names = ['0', '1', '2', '3', '4', '5', '6', '7',
-                            '8', '9', 'dot', 'minus', 'plus', 'slash',
+        self.class_names = ['0', '1', '2', '3', '4',
+                            '5', '6', '7', '8', '9',
+                            '.', '-', '+', '/',
                             'w', 'x', 'y', 'z']
         self.num_classes = len(self.class_names)
 

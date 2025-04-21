@@ -1,3 +1,4 @@
+import re
 from sympy import symbols, Eq, solve, sympify
 
 
@@ -22,6 +23,22 @@ def solve_equation(equation_str):
     solutions = solve(equation, x)
 
     return solutions
+
+
+def process_equation(parsed_equation: list[str]):
+    equation_str = ""
+    for char in parsed_equation:
+        equation_str += char
+
+    # '=' is split when segmenting the image so
+    # replacing '--' with '='
+    equation_str = equation_str.replace("--", "=")
+    equation_str = equation_str.replace('z', '2')
+    equation_str = equation_str.replace('x', "*x")
+
+    # Remove any characters that shouldn't be there
+    equation_str = re.sub(r'[^0-9x+\-*/=]', '', equation_str)
+    return equation_str
 
 
 def main():

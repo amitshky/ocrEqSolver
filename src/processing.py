@@ -63,7 +63,7 @@ def process_image(image):
 
     contours, _ = cv.findContours(
         binarized, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    contours_img = cv.drawContours(image, contours, -1, (255, 0, 255), 3)
+    # contours_img = cv.drawContours(image, contours, -1, (255, 0, 255), 3)
 
     # Sort contours by x-coordinate (left to right)
     sorted_contours = sorted(
@@ -93,17 +93,21 @@ def process_image(image):
 
         # add padding to make it square
         char_img = image_padding(char_img)
-        # resize for input into model
-        char_img = cv.resize(char_img, (28, 28))
+        # resize for the model
+        char_img = cv.resize(char_img, (28, 28), interpolation=cv.INTER_AREA)
 
         # Save for later recognition
         segmented_chars.append({
             'image': char_img,
             'position': (x, y, w, h),
-            # 'value': self.recognize_character(char_img)
+            'value': '?' # this is updated later
         })
-    return
 
+    return (binarized, segmented_chars)
+
+
+
+#### These are utils to process the dataset ####
 
 def count_dataset(path: str = "dataset/"):
     map: dict = dict()
