@@ -7,6 +7,7 @@ import cv2
 import re
 import matplotlib.pyplot as plt
 from sympy.parsing.sympy_parser import parse_expr
+from sympy import symbols, Eq, solve, sympify
 import tempfile
 
 
