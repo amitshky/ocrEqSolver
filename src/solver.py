@@ -1,0 +1,34 @@
+from sympy import symbols, Eq, solve, sympify
+
+
+def solve_equation(equation_str):
+    if equation_str == '':
+        raise Exception("Empty equation string.")
+
+    # Define the symbol (you can modify to detect more symbols if needed)
+    x = symbols('x')
+
+    # Split the equation string at '='
+    left_expr, right_expr = equation_str.split('=')
+
+    # Convert strings to sympy expressions
+    left = sympify(left_expr)
+    right = sympify(right_expr)
+
+    # Create the equation
+    equation = Eq(left, right)
+
+    # Solve the equation
+    solutions = solve(equation, x)
+
+    return solutions
+
+
+def main():
+    equation_str = "2*x^2-8=0"
+    solution = solve_equation(equation_str)
+    print(solution)
+
+
+if __name__ == "__main__":
+    main()
