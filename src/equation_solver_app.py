@@ -14,6 +14,7 @@ class EquationSolverApp:
         self.root = root
         self.root.title("Equation Solver")
         self.root.geometry("1000x700")
+        self.root.state("zoomed")
         self.root.resizable(True, True)
 
         # Set app style
