@@ -38,6 +38,7 @@ def main():
 
     model = Model(load=False)
     model.summary()
+    return
     model.train(train_ds, val_ds, EPOCHS)
     model.save(f"saves/model-{int(time.time())}.weights.h5")
 

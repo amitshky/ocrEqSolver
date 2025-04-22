@@ -30,7 +30,8 @@ def show_processed_images(segmented_chars, processed_images):
         plt.title(img['title'])
         plt.axis('off')
 
-    plt.subplots_adjust(hspace=0.5, wspace=0.3)  # Increase space between images
+    # Increase space between images
+    plt.subplots_adjust(hspace=0.5, wspace=0.3)
     plt.tight_layout()
     plt.show()
 
@@ -114,15 +115,14 @@ def process_image(image, isDebug: bool):
     if isDebug:
         contours_img = cv.drawContours(image, contours, -1, (255, 0, 255), 3)
         processed_images = [
-            { "title": "Grayscaled", "image": grayscaled },
-            { "title": "Binarized", "image": binarized },
-            { "title": "Contours", "image": contours_img },
-            { "title": "Segments", "image": img_rect }
+            {"title": "Grayscaled", "image": grayscaled},
+            {"title": "Binarized", "image": binarized},
+            {"title": "Contours", "image": contours_img},
+            {"title": "Segments", "image": img_rect}
         ]
 
     processed = img_rect
     return (processed, segmented_chars, processed_images)
-
 
 
 #### These are utils to process the dataset ####

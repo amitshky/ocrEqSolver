@@ -36,8 +36,7 @@ def process_equation(parsed_equation: list[str]):
     # formatting equation for sympy
     equation_str = equation_str.replace('x', "*x")
     # replace x{num} with x^{num}; eg: x2 -> x^2
-    equation_str = re.sub(r'x(\d+)', lambda match: f'x^{
-                          match.group(1)}', equation_str)
+    equation_str = re.sub(r'x(\d+)', lambda match: f'x^{match.group(1)}', equation_str)
 
     # Remove any characters that shouldn't be there
     equation_str = re.sub(r'[^0-9x+\-\^*/=]', '', equation_str)

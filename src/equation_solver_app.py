@@ -245,8 +245,7 @@ class EquationSolverApp:
             self.results_text.delete(1.0, tk.END)
             self.results_text.insert(
                 tk.END, f"Detected Equation: {equation_str}\n")
-            self.results_text.insert(tk.END, f"Solution: {
-                solve_equation(equation_str)}\n")
+            self.results_text.insert(tk.END, f"Solution: {solve_equation(equation_str)}\n")
 
             self.status_var.set("DONE.")
 
