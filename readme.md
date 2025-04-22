@@ -1,7 +1,7 @@
 # EqSolver
 
 ## Pre-requisites
-- [python 3.12](https://www.python.org/downloads/release/python-3120/) (for now tensorflow only supports upto python v3.12)
+- [python 3.12](https://www.python.org/downloads/release/python-3120/) (at the time of making this project, tensorflow only supports upto python v3.12)
 
 
 ## Configure project
