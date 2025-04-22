@@ -125,7 +125,7 @@ def process_image(image, isDebug: bool):
     return (processed, segmented_chars, processed_images)
 
 
-#### These are utils to process the dataset ####
+# These are utils to process the dataset ####
 
 def count_dataset(path: str = "dataset/"):
     map: dict = dict()

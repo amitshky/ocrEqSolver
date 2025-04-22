@@ -117,6 +117,9 @@ class EquationSolverApp:
         file_path = filedialog.askopenfilename(title="Select Equation Image",
                                                filetypes=file_types)
 
+        self.process_button.config(state=tk.DISABLED)
+        self.solve_button.config(state=tk.DISABLED)
+
         if file_path:
             self.image_path = file_path
             self.status_var.set(f"Image loaded: {os.path.basename(file_path)}")
