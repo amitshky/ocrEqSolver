@@ -46,10 +46,10 @@ def process_equation(parsed_equation: list[str]):
 
     # # if there's no coefficient and just x (for terms like x or -x),
     # leave it as is ('x' or '-x')
-    # equation_str = re.sub(r'(?<!\d)x', 'x', equation_str)
+    equation_str = re.sub(r'(?<!\d)x', 'x', equation_str)
 
     # # handle terms like -8x or 3x correctly, ensuring the sign is maintained
-    # equation_str = re.sub(r'(?<=\d)x(?!\^)', r'*x', equation_str)
+    equation_str = re.sub(r'(?<=\d)x(?!\^)', r'*x', equation_str)
 
     # remove any characters that shouldn't be there
     equation_str = re.sub(r'[^0-9x+\-\^*/=]', '', equation_str)
